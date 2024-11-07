@@ -22,7 +22,7 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
  tags = {
-    Name = "${var.instance_name}"-SG
+    Name = "${var.instance_name}-SG"
   }
 }
 
@@ -71,6 +71,7 @@ output "CentOS8_AMD_Server_IP" {
 }
 
 output "pem_file_for_ssh" {
-  value = tls_private_key.master-key-gen.private_key_pem
+  value = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
 }
+

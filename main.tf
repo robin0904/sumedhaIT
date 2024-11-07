@@ -62,8 +62,7 @@ resource "local_file" "local_key_pair" {
   content         = tls_private_key.master_key_gen.private_key_pem
 }
 
-# Output the Windows Server's private IP
+# Output the CentOS8-AMD Server private IP
 output "CentOS8_AMD_Server_IP" {
-  value = aws_instance.windows_server.private_ip
+  value = aws_instance.CentOS8-AMD.private_ip
 }
-

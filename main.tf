@@ -29,7 +29,7 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
  tags = {
-    Name = "${var.instance_name}"-SG
+    Name = "${var.instance_name}-SG"
   }
 }
 

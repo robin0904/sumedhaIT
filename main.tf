@@ -57,7 +57,7 @@ resource "aws_instance" "CentOS8-AMD" {
   # Corrected user data for PowerShell execution
   user_data = <<-EOF
     #!/bin/bash
-    sudo dcv create-session --owner 'Sumedha@sumedhait.com' SumedhaIT --type virtual
+    sudo dcv create-session --owner 'admin@sumedhait.com' SumedhaIT --type virtual
     EOF
 
   tags = {

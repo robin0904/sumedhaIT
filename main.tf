@@ -8,8 +8,8 @@ resource "aws_security_group" "master" {
 
   # Allow RDP access (port 3389)
   ingress {
-    from_port   = 3389
-    to_port     = 3389
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -20,6 +20,10 @@ resource "aws_security_group" "master" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.instance_name}"-sg
   }
 }
 
@@ -65,4 +69,9 @@ resource "local_file" "local_key_pair" {
 # Output the CentOS8-AMD Server private IP
 output "CentOS8_AMD_Server_IP" {
   value = aws_instance.CentOS8-AMD.private_ip
+}
+
+output "pem_file_for_ssh" {
+  value = tls_private_key.master-key-gen.private_key_pem
+  sensitive = true
 }

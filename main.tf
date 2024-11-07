@@ -14,6 +14,13 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8444
+    to_port     = 8444
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Egress rule to allow all outbound traffic
   egress {
     from_port   = 0
@@ -22,7 +29,7 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
  tags = {
-    Name = "${var.instance_name}-SG"
+    Name = "${var.instance_name}"-SG
   }
 }
 

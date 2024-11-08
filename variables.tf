@@ -9,3 +9,10 @@ variable "instance_name" {
   type        = string
   default  = "SumedhaIT-server"
 }
+
+# Variable for your variables.tf file
+variable "directory_id" {
+  description = "The ID of the existing AWS Directory Service"
+  type        = string
+  default     = "d-9f6773508e"
+}

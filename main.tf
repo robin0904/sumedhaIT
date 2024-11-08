@@ -27,7 +27,7 @@ resource "aws_iam_role" "ssm_role" {
 
 # Attach required policies for SSM
 resource "aws_iam_role_policy_attachment" "ssm_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMMangedInstanceCore"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess"
   role       = aws_iam_role.ssm_role.name
 }
 

@@ -93,7 +93,7 @@ resource "aws_ssm_association" "domain_join" {
 
 # EC2 instance
 resource "aws_instance" "CentOS8-AMD" {
-  ami               = "ami-00b84670be6b17d8e"
+  ami               = "ami-0e51044ae4e4e5ef5"
   instance_type     = "c6a.xlarge"
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-01e7e581424a68b10"

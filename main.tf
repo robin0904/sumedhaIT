@@ -109,19 +109,3 @@ output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
 }
-
-# Variables
-variable "instance_name" {
-  description = "Name of the instance"
-  type        = string
-}
-
-variable "keypair_name" {
-  description = "Name of the key pair"
-  type        = string
-}
-
-variable "username" {
-  description = "Username to be checked or created on the server"
-  type        = string
-}

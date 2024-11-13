@@ -76,7 +76,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
     # Start the NICE DCV session
     echo "Starting NICE DCV session..."
-    sudo dcv create-session --owner "$USER_NAME" "$DCV_SESSION_NAME" --type virtual
+    sudo dcv create-session --owner "$USER_NAME"@SumedhaIT --type virtual
 
     # Verify session creation
     if dcv list-sessions | grep -q "$DCV_SESSION_NAME"; then
@@ -109,3 +109,4 @@ output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
 }
+

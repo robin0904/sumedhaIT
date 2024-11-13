@@ -1,45 +1,12 @@
 provider "aws" {
-  region = "ap-south-1"
+  region = "ap-south-1"  # Replace with your desired AWS region
 }
 
-# Data source for the existing Directory Service
-data "aws_directory_service_directory" "existing" {
-  directory_id = var.directory_id
-}
-
-# IAM role for EC2 to use SSM
-resource "aws_iam_role" "ssm_role" {
-  name = "${var.instance_name}-ssm-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-# Attach required policies for SSM
-resource "aws_iam_role_policy_attachment" "ssm_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess"
-  role       = aws_iam_role.ssm_role.name
-}
-
-resource "aws_iam_instance_profile" "ssm_profile" {
-  name = "${var.instance_name}-ssm-profile"
-  role = aws_iam_role.ssm_role.name
-}
-
-# Your existing security group configuration
+# Security group to allow RDP access
 resource "aws_security_group" "master" {
   vpc_id = "vpc-0a134c2c8adbdc400"
 
+  # Allow SSH access (port 22)
   ingress {
     from_port   = 22
     to_port     = 22
@@ -47,6 +14,7 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow DCV access (port 8444)
   ingress {
     from_port   = 8444
     to_port     = 8444
@@ -54,74 +22,106 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Egress rule to allow all outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "${var.instance_name}-SG"
   }
 }
 
+# Generate an SSH key pair
 resource "tls_private_key" "master_key_gen" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
+# Create the Key Pair
 resource "aws_key_pair" "master_key_pair" {
   key_name   = var.keypair_name
   public_key = tls_private_key.master_key_gen.public_key_openssh
 }
 
-# SSM association to join the domain
-resource "aws_ssm_association" "domain_join" {
-  name = "AWS-JoinDirectoryServiceDomain"
-
-  targets {
-    key    = "InstanceIds"
-    values = [aws_instance.CentOS8-AMD.id]
-  }
-
-  parameters = {
-    directoryId = data.aws_directory_service_directory.existing.id
-    directoryName = data.aws_directory_service_directory.existing.name
-  }
-}
-
-# EC2 instance
+# Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami               = "ami-0e51044ae4e4e5ef5"
-  instance_type     = "c6a.xlarge"
+  ami               = "ami-00b84670be6b17d8e"  # Replace with your desired CentOS AMI ID
+  instance_type     = "c6a.xlarge"            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-01e7e581424a68b10"
   availability_zone = "ap-south-1a"
   vpc_security_group_ids = [aws_security_group.master.id]
-  iam_instance_profile   = aws_iam_instance_profile.ssm_profile.name
 
+  # Updated user data script
   user_data = <<-EOF
     #!/bin/bash
-    sudo dcv create-session --owner 'admin@sumedhait.com' SumedhaIT --type virtual
-    EOF
+
+    # Variables
+    DCV_SESSION_NAME="SumedhaIT"
+    USER_NAME="${var.username}"
+
+    # Check if user exists
+    if id "$USER_NAME" &>/dev/null; then
+        echo "User $USER_NAME exists."
+    else
+        echo "User $USER_NAME does not exist. Creating user..."
+        sudo useradd -m "$USER_NAME"    # Create user with a home directory
+        echo "$USER_NAME:password" | sudo chpasswd # Set default password, change as required
+        echo "User $USER_NAME created."
+    fi
+
+    # Start the NICE DCV session
+    echo "Starting NICE DCV session..."
+    sudo dcv create-session --owner "$USER_NAME" "$DCV_SESSION_NAME" --type virtual
+
+    # Verify session creation
+    if dcv list-sessions | grep -q "$DCV_SESSION_NAME"; then
+        echo "NICE DCV session $DCV_SESSION_NAME created successfully."
+    else
+        echo "Failed to create NICE DCV session $DCV_SESSION_NAME."
+        exit 1
+    fi
+  EOF
 
   tags = {
     Name = var.instance_name
   }
 }
 
+# Save the private key locally
 resource "local_file" "local_key_pair" {
   filename        = "${var.keypair_name}.pem"
   file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
 }
 
+# Output the CentOS8-AMD Server private IP
 output "CentOS8_AMD_Server_IP" {
   value = aws_instance.CentOS8-AMD.private_ip
 }
 
+# Output the PEM file for SSH
 output "pem_file_for_ssh" {
-  value = tls_private_key.master_key_gen.private_key_pem
+  value     = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
+}
+
+# Variables
+variable "instance_name" {
+  description = "Name of the instance"
+  type        = string
+}
+
+variable "keypair_name" {
+  description = "Name of the key pair"
+  type        = string
+}
+
+variable "username" {
+  description = "Username to be checked or created on the server"
+  type        = string
 }

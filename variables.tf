@@ -9,6 +9,12 @@ variable "instance_name" {
   type        = string
   default  = "SumedhaIT-server"
 }
+# Instance name for tagging the Windows server
+variable "username" {
+  description = "Name tag for the Windows server instance"
+  type        = string
+  default  = "admin"
+}
 
 # Variable for your variables.tf file
 variable "directory_id" {

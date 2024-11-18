@@ -76,7 +76,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
     # Start the NICE DCV session
     echo "Starting NICE DCV session..."
-    sudo dcv create-session --owner "$USER_NAME"@SumedhaIT --type virtual
+    sudo dcv create-session --owner "$USER_NAME"@sumedhait.com --type virtual
 
     # Verify session creation
     if dcv list-sessions | grep -q "$DCV_SESSION_NAME"; then
@@ -94,7 +94,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
 # Save the private key locally
 resource "local_file" "local_key_pair" {
-  filename        = "${var.keypair_name}.pem"
+  filename        = "${var.instance_name}.pem"
   file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
 }

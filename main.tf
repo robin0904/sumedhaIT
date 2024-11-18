@@ -100,12 +100,12 @@ resource "local_file" "local_key_pair" {
 }
 
 # Output the CentOS8-AMD Server Public IP
-output "CentOS8_AMD_Server_IP" {
+output "CentOS8_AMD_Server_Private_IP" {
   value = aws_instance.CentOS8-AMD.public_ip
 }
 
 # Output the CentOS8-AMD Server private IP
-output "CentOS8_AMD_Server_IP" {
+output "CentOS8_AMD_Server_Public_IP" {
   value = aws_instance.CentOS8-AMD.private_ip
 }
 
@@ -114,3 +114,4 @@ output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
 }
+

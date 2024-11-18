@@ -62,7 +62,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
     # Variables
     DCV_SESSION_NAME="SumedhaIT"
-    USER_NAME="${var.username}"
+    USER_NAME="${var.instance_name}"
 
     # Check if user exists
     if id "$USER_NAME" &>/dev/null; then
@@ -88,7 +88,7 @@ resource "aws_instance" "CentOS8-AMD" {
   EOF
 
   tags = {
-    Name = var.instance_name
+    Name = "${var.instance_name}-SumedhaIT-server"
   }
 }
 
@@ -97,6 +97,11 @@ resource "local_file" "local_key_pair" {
   filename        = "${var.instance_name}.pem"
   file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
+}
+
+# Output the CentOS8-AMD Server Public IP
+output "CentOS8_AMD_Server_IP" {
+  value = aws_instance.CentOS8-AMD.public_ip
 }
 
 # Output the CentOS8-AMD Server private IP

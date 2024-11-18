@@ -52,8 +52,8 @@ resource "aws_instance" "CentOS8-AMD" {
   ami               = "ami-00b84670be6b17d8e"  # Replace with your desired CentOS AMI ID
   instance_type     = "c6a.xlarge"            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
-  subnet_id         = "subnet-01e7e581424a68b10"
-  availability_zone = "ap-south-1a"
+  subnet_id         = "subnet-09c6010c6cbfd6a17"
+  availability_zone = "ap-south-1b"
   vpc_security_group_ids = [aws_security_group.master.id]
 
   # Updated user data script
@@ -109,4 +109,3 @@ output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
 }
-

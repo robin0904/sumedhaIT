@@ -29,6 +29,10 @@ resource "aws_security_group" "master" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.instance_name}-SG"
+  }
 }
 
 # Generate an SSH key pair
@@ -45,7 +49,7 @@ resource "aws_key_pair" "master_key_pair" {
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami               = "ami-0ad4e446a1a827dc7"  # Replace with your desired CentOS AMI ID
+  ami               = "ami-0e51044ae4e4e5ef5"  # Replace with your desired CentOS AMI ID
   instance_type     = "c6a.xlarge"            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-09c6010c6cbfd6a17"
@@ -53,15 +57,21 @@ resource "aws_instance" "CentOS8-AMD" {
   vpc_security_group_ids = [aws_security_group.master.id]
 
   # Updated user data script
- user_data = <<-EOF
+  user_data = <<-EOF
     #!/bin/bash
 
     # Variables
-    USER_NAME="${var.instance_name}"
-    sudo systemctl restart sssd
-    sudo su - $USER_NAME@sumedhalabs.com
+    original_var="${var.instance_name}"
+    USER_NAME=$(echo "$original_var" | sed 's/_[[:space:]]/  /g' | sed 's/_$//')
+    systemctl restart sssd
+    su - $USER_NAME@sumedhalabs.com
     sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
-EOF
+
+  EOF
+
+  tags = {
+    Name = var.instance_name
+  }
 }
 
 # Save the private key locally

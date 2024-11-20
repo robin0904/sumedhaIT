@@ -66,7 +66,7 @@ resource "aws_instance" "CentOS8-AMD" {
     systemctl restart sssd
     su - $USER_NAME@sumedhalabs.com
     #sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
-    sleep 02 && /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT' --owner '$USER_NAME@sumedhalabs.com' --type virtual >> /var/log/dcv-session.log 2>&1
+    sleep 30 && /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT' --owner '$USER_NAME@sumedhalabs.com' --type virtual >> /var/log/dcv-session.log 2>&1
   EOF
   tags = {
     Name = var.instance_name

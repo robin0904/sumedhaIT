@@ -49,7 +49,7 @@ resource "aws_key_pair" "master_key_pair" {
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami               = "ami-0e51044ae4e4e5ef5"  # Replace with your desired CentOS AMI ID
+  ami               = "ami-0ad4e446a1a827dc7"  # Replace with your desired CentOS AMI ID
   instance_type     = "c6a.xlarge"            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-09c6010c6cbfd6a17"
@@ -57,35 +57,15 @@ resource "aws_instance" "CentOS8-AMD" {
   vpc_security_group_ids = [aws_security_group.master.id]
 
   # Updated user data script
-  user_data = <<-EOF
+ user_data = <<-EOF
     #!/bin/bash
 
     # Variables
-    DCV_SESSION_NAME="SumedhaIT"
     USER_NAME="${var.instance_name}"
-
-    # Check if user exists
-    if id "$USER_NAME" &>/dev/null; then
-        echo "User $USER_NAME exists."
-    else
-        echo "User $USER_NAME does not exist. Creating user..."
-        sudo useradd -m "$USER_NAME"    # Create user with a home directory
-        echo "$USER_NAME:password" | sudo chpasswd # Set default password, change as required
-        echo "User $USER_NAME created."
-    fi
-
-    # Start the NICE DCV session
-    echo "Starting NICE DCV session..."
-    sudo dcv create-session --owner "$USER_NAME"@sumedhait.com --type virtual
-
-    # Verify session creation
-    if dcv list-sessions | grep -q "$DCV_SESSION_NAME"; then
-        echo "NICE DCV session $DCV_SESSION_NAME created successfully."
-    else
-        echo "Failed to create NICE DCV session $DCV_SESSION_NAME."
-        exit 1
-    fi
-  EOF
+    sudo systemctl restart sssd
+    sudo su - $USER_NAME@sumedhalabs.com
+    sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
+EOF
 
   tags = {
     Name = "${var.instance_name}-SumedhaIT-server"

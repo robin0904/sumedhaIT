@@ -62,10 +62,6 @@ resource "aws_instance" "CentOS8-AMD" {
     sudo su - $USER_NAME@sumedhalabs.com
     sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
 EOF
-
-  tags = {
-    Name = "${var.instance_name}-SumedhaIT-server"
-  }
 }
 
 # Save the private key locally

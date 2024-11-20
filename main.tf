@@ -70,7 +70,7 @@ resource "aws_instance" "CentOS8-AMD" {
     /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
   EOF
   tags = {
-    Name = var.instance_name
+    Name = "${var.instance_name}${var.name}"
   }
 }
 

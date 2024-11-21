@@ -86,8 +86,13 @@ output "CentOS8_AMD_Server_Public_IP" {
   value = aws_instance.CentOS8-AMD.public_ip
 }
 
-# Output the PEM file for SSH
-output "pem_file_for_ssh" {
-  value     = tls_private_key.master_key_gen.private_key_pem
-  sensitive = true
+# Output Copy the URL
+output "CentOS8_AMD_Login" {
+  value = "Copy the mentioned URL & Paste it on Browser https://${aws_instance.CentOS8-AMD.public_ip}:8444"
 }
+# # Output the PEM file for SSH
+# output "pem_file_for_ssh" {
+#   value     = tls_private_key.master_key_gen.private_key_pem
+#   sensitive = true
+# }
+

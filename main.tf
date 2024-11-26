@@ -50,7 +50,7 @@ resource "aws_key_pair" "master_key_pair" {
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
   ami               = "ami-0d0428dcb09690bf7"  # Replace with your desired CentOS AMI ID
-  instance_type     = "c6a.xlarge"            # Replace with your desired instance type
+  instance_type     = "c6a.2xlarge"            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-09c6010c6cbfd6a17"
   availability_zone = "ap-south-1b"

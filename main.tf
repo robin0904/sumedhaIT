@@ -38,7 +38,7 @@ resource "aws_security_group" "master" {
 # Generate an SSH key pair
 resource "tls_private_key" "master_key_gen" {
   algorithm = "RSA"
-  rsa_bits  = 2048
+  rsa_bits  = 4096
 }
 
 # Create the Key Pair
@@ -77,7 +77,7 @@ resource "aws_instance" "CentOS8-AMD" {
 # Save the private key locally
 resource "local_file" "local_key_pair" {
   filename        = "${var.instance_name}.pem"
-  file_permission = "0400"
+  #file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
 }
 

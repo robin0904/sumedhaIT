@@ -93,6 +93,6 @@ output "CentOS8_AMD_Login" {
  # Output the PEM file for SSH
 output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
-  #sensitive = true
+  sensitive = true
  }
 

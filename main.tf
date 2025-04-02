@@ -50,7 +50,7 @@ resource "aws_key_pair" "master_key_pair" {
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
   ami               = "ami-0d0428dcb09690bf7"  # Replace with your desired CentOS AMI ID
-  instance_type     = "c6i.2xlarge"            # Replace with your desired instance type
+  instance_type     = "m6a.xlarge"            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-09c6010c6cbfd6a17"
   availability_zone = "ap-south-1b"
@@ -90,9 +90,9 @@ output "CentOS8_AMD_Server_Public_IP" {
 output "CentOS8_AMD_Login" {
   value = "Copy the mentioned URL & Paste it on Browser https://${aws_instance.CentOS8-AMD.public_ip}:8444"
 }
-# # Output the PEM file for SSH
-# output "pem_file_for_ssh" {
-#   value     = tls_private_key.master_key_gen.private_key_pem
-#   sensitive = true
-# }
+ # Output the PEM file for SSH
+output "pem_file_for_ssh" {
+  value     = tls_private_key.master_key_gen.private_key_pem
+  sensitive = true
+ }
 

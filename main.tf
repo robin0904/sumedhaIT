@@ -77,7 +77,7 @@ resource "aws_instance" "CentOS8-AMD" {
 # Save the private key locally
 resource "local_file" "local_key_pair" {
   filename        = "${var.instance_name}.pem"
-  file_permission = "0400"
+  #file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
 }
 
@@ -93,6 +93,6 @@ output "CentOS8_AMD_Login" {
  # Output the PEM file for SSH
 output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
-  #sensitive = true
+  sensitive = true
  }
 

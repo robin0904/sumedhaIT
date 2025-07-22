@@ -14,10 +14,10 @@ resource "aws_security_group" "master" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow DCV access (port 8444)
+  # Allow DCV access (port 8443)
   ingress {
-    from_port   = 8444
-    to_port     = 8444
+    from_port   = 8443
+    to_port     = 8443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -31,7 +31,7 @@ resource "aws_security_group" "master" {
   }
 
   tags = {
-    Name = "${var.instance_name}-SG"
+    Name = "${var.instance_name}-${var.suffix}-SG"
   }
 }
 
@@ -43,14 +43,14 @@ resource "tls_private_key" "master_key_gen" {
 
 # Create the Key Pair
 resource "aws_key_pair" "master_key_pair" {
-  key_name   = var.keypair_name
+  key_name   = "${var.keypair_name}-${var.suffix}.pem"
   public_key = tls_private_key.master_key_gen.public_key_openssh
 }
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
   ami               = "ami-01be33b7be196386a"  # Replace with your desired CentOS AMI ID
-  instance_type     = "m6a.xlarge"            # Replace with your desired instance type
+  instance_type     = var.instance_type            # Replace with your desired instance type
   key_name          = aws_key_pair.master_key_pair.key_name
   subnet_id         = "subnet-09c6010c6cbfd6a17"
   availability_zone = "ap-south-1b"
@@ -70,13 +70,13 @@ resource "aws_instance" "CentOS8-AMD" {
     /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
   EOF
   tags = {
-    Name = "${var.instance_name}${var.name}"
+    Name = "${var.instance_name}-${var.name}-${var.suffix}"
   }
 }
 
 # Save the private key locally
 resource "local_file" "local_key_pair" {
-  filename        = "${var.instance_name}.pem"
+  filename        = "${var.instance_name}-${var.name}-${var.suffix}.pem"
   file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
 }
@@ -88,11 +88,10 @@ output "CentOS8_AMD_Server_Public_IP" {
 
 # Output Copy the URL
 output "CentOS8_AMD_Login" {
-  value = "Copy the mentioned URL & Paste it on Browser https://${aws_instance.CentOS8-AMD.public_ip}:8444"
+  value = "Copy the mentioned URL & Paste it on Browser https://${aws_instance.CentOS8-AMD.public_ip}:8443"
 }
  # Output the PEM file for SSH
 output "pem_file_for_ssh" {
   value     = tls_private_key.master_key_gen.private_key_pem
   sensitive = true
  }
-

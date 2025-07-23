@@ -43,7 +43,7 @@ resource "tls_private_key" "master_key_gen" {
 
 # Create the Key Pair
 resource "aws_key_pair" "master_key_pair" {
-  key_name   = "${var.keypair_name}-${var.suffix}.pem"
+  key_name   = "${var.instance_name}-${var.name}-${var.suffix}.pem"
   public_key = tls_private_key.master_key_gen.public_key_openssh
 }
 
@@ -67,7 +67,7 @@ resource "aws_instance" "CentOS8-AMD" {
     systemctl restart sssd
     su - $USER_NAME@sumedhalabs.com
     #sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
-    /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
+    /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT-$USER_NAME' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
   EOF
   tags = {
     Name = "${var.instance_name}-${var.name}-${var.suffix}"

@@ -55,6 +55,7 @@ resource "aws_instance" "CentOS8-AMD" {
   subnet_id         = "subnet-09c6010c6cbfd6a17"
   availability_zone = "ap-south-1b"
   vpc_security_group_ids = [aws_security_group.master.id]
+  iam_instance_profile = "SSM"
 
   # Updated user data script
   user_data = <<-EOF

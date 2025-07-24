@@ -1,10 +1,12 @@
 provider "aws" {
   region = "ap-south-1" # Replace with your desired AWS region
+  # profile = "Sumedha"
 }
 
 # Importing the SG
 data "aws_security_group" "TerraformSecurityGroup" {
   id = "sg-04430765f75fb1634"
+  # name = "Terraform-Servers-SG"
 }
 
 # Generate an SSH key pair
@@ -15,7 +17,7 @@ resource "tls_private_key" "master_key_gen" {
 
 # Create the Key Pair
 resource "aws_key_pair" "master_key_pair" {
-  key_name   = "${var.instance_name}-${var.name}-${var.suffix}"
+  key_name   = "${var.name}-${var.instance_name}-${var.suffix}"
   public_key = tls_private_key.master_key_gen.public_key_openssh
 }
 
@@ -49,7 +51,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
 # Save the private key locally
 resource "local_file" "local_key_pair" {
-  filename        = "${var.instance_name}-${var.name}-${var.suffix}.pem"
+  filename        = "${var.name}-${var.instance_name}-${var.suffix}.pem"
   file_permission = "0400"
   content         = tls_private_key.master_key_gen.private_key_pem
 }

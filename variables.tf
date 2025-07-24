@@ -1,22 +1,23 @@
 variable "keypair_name" {
-  type = string
+  description = "EC2's Key Pair"
+  type    = string
 }
 
 # Instance name for tagging the Windows server
 variable "instance_name" {
-  description = "Name tag for the EC2 Instance"
+  description = "EC2 Instance Server Name"
   type        = string
 }
 
 variable "name" {
+  # Used for Prefix
   description = "Name tag for the Instance"
   type        = string
-  default = "Sumedha-CloudLabs_Server-"
-
+  default     = "Sumedha-CloudLabs_Server"
 }
 
 variable "instance_type" {
-  description = "Instance Type variable"
+  description = "Instance Type for EC2"
   type        = string
 }
 

@@ -23,7 +23,7 @@ resource "aws_key_pair" "master_key_pair" {
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami                    = "ami-0605d9643cbfb387c" # Replace with your desired CentOS AMI ID
+  ami                    = "ami-0d2028fde0229318d" # Replace with your desired CentOS AMI ID
   instance_type          = var.instance_type       # Replace with your desired instance type
   key_name               = aws_key_pair.master_key_pair.key_name
   subnet_id              = "subnet-01e7e581424a68b10"
@@ -32,18 +32,25 @@ resource "aws_instance" "CentOS8-AMD" {
   iam_instance_profile   = "SSM"
 
   # Updated user data script
-  # user_data = <<-EOF
-  #   #!/bin/bash
+  user_data = <<-EOF
+    #!/bin/bash
 
-  #   # Variables
-  #   sudo -i
-  #   original_var="${var.instance_name}"
-  #   USER_NAME=$(echo "$original_var" | sed 's/_[[:space:]]/  /g' | sed 's/_$//')
-  #   systemctl restart sssd
-  #   su - $USER_NAME@sumedhalabs.com
-  #   #sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
-  #   /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT-$USER_NAME' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
-  # EOF
+    sed -i 's/^PasswordAuthentication no$/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    systemctl restart sshd
+
+    ########
+    # Variables
+    # original_var="${var.instance_name}"
+    # USER_NAME=$(echo "$original_var" | sed 's/_[[:space:]]/  /g' | sed 's/_$//')
+    # systemctl restart sssd
+    # su - $USER_NAME@sumedhalabs.com
+    # #sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
+    # /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT-$USER_NAME' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
+    # sudo semanage fcontext -a -t ssh_home_t '/home/[^/]+/.ssh(/.*)?'
+    # sudo restorecon -R -v /home/cloud-user/.ssh/
+    # sudo restorecon -R -v /home/cloud-user/.ssh/    
+    #########
+  EOF
   tags = {
     Name = "${var.name}-${var.instance_name}-${var.suffix}"
   }
@@ -68,6 +75,6 @@ output "CentOS8_AMD_Login" {
 
 # Output the PEM file for SSH
 output "pem_file_for_ssh" {
-  value     = tls_private_key.master_key_gen.private_key_pem
+  value     = aws_key_pair.master_key_pair.key_name
   sensitive = true
 }

@@ -23,7 +23,7 @@ resource "aws_key_pair" "master_key_pair" {
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami                    = "ami-0e21c1d2051dcf1d1" # Replace with your desired CentOS AMI ID
+  ami                    = "ami-02b28212af17fd2da" # Replace with your desired CentOS AMI ID
   instance_type          = var.instance_type       # Replace with your desired instance type
   key_name               = aws_key_pair.master_key_pair.key_name
   subnet_id              = "subnet-01e7e581424a68b10"
@@ -36,6 +36,7 @@ resource "aws_instance" "CentOS8-AMD" {
     #!/bin/bash
 
     sed -i 's/^PasswordAuthentication no$/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    sed -i 's/^cloud-user ALL=(ALL) NOPASSWD:ALL$/cloud-user ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
     systemctl restart sshd
 
     ########

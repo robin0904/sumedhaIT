@@ -37,7 +37,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
     sed -i 's/^PasswordAuthentication no$/PasswordAuthentication yes/' /etc/ssh/sshd_config
     # sed -i 's/^cloud-user ALL=(ALL) NOPASSWD:ALL$/cloud-user ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
-    systemctl restart sshd
+    sleep 60 && sudo systemctl restart sshd sssd dcvserver
 
     ########
     # Variables

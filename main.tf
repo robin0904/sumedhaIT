@@ -37,7 +37,7 @@ resource "aws_instance" "CentOS8-AMD" {
 
     sed -i 's/^PasswordAuthentication no$/PasswordAuthentication yes/' /etc/ssh/sshd_config
     # sed -i 's/^cloud-user ALL=(ALL) NOPASSWD:ALL$/cloud-user ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
-    sleep 60 && sudo systemctl restart sshd sssd dcvserver
+    systemctl restart sshd
 
     ########
     # Variables
@@ -79,3 +79,5 @@ output "pem_file_for_ssh" {
   value     = aws_key_pair.master_key_pair.key_name
   sensitive = true
 }
+
+# ssh -i "Sumedha-CloudLabs_Server-DCVTestInstance-Koushal-Manual_.pem" cloud-user@3.110.30.183 "dcv create-session "Student3Session" --owner student3 --type virtual"

@@ -49,7 +49,8 @@ resource "aws_instance" "CentOS8-AMD" {
     echo $PASSWORD | realm join -U $USERNAME sumedhalabs.com
     adcli update -C --computer-password-lifetime=0 -D sumedhalabs.com
     systemctl restart sssd
-
+    rm -f /tmp/join_script
+    
     ########
     # Variables
     # original_var="${var.instance_name}"

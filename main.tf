@@ -23,7 +23,7 @@ resource "aws_key_pair" "master_key_pair" {
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami                    = "ami-0e315150d66b79a3a" # Replace with your desired CentOS AMI ID
+  ami                    = "ami-03b41471a8918753a" # Replace with your desired CentOS AMI ID
   instance_type          = var.instance_type       # Replace with your desired instance type
   key_name               = aws_key_pair.master_key_pair.key_name
   subnet_id              = "subnet-01e7e581424a68b10"
@@ -38,6 +38,17 @@ resource "aws_instance" "CentOS8-AMD" {
     sed -i 's/^PasswordAuthentication no$/PasswordAuthentication yes/' /etc/ssh/sshd_config
     # sed -i 's/^cloud-user ALL=(ALL) NOPASSWD:ALL$/cloud-user ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
     systemctl restart sshd
+
+    SECRET=$(aws secretsmanager get-secret-value --secret-id ec2-domain-join-creds --query SecretString --output text)
+    USERNAME=$(echo $SECRET | jq -r '.username')
+    PASSWORD=$(echo $SECRET | jq -r '.password')
+
+    TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+    INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+    hostnamectl set-hostname $INSTANCE_ID
+    echo $PASSWORD | realm join -U $USERNAME sumedhalabs.com
+    adcli update -C --computer-password-lifetime=0 -D sumedhalabs.com
+    systemctl restart sssd
 
     ########
     # Variables

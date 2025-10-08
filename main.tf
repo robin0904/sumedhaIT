@@ -40,10 +40,11 @@ resource "aws_instance" "CentOS8-AMD" {
     systemctl restart sshd
 
     bash /root/.login-kb/login_ad.bash
-    
     rm -f /root/.bash_history
     rm -f /home/centos/.bash_history
     rm -f /home/cloud-user/.bash_history
+    echo "ad_gpo_access_control = disabled" >> /etc/sssd/sssd.conf
+    systemctl restart sssd
     
     ########
     # Variables

@@ -41,6 +41,10 @@ resource "aws_instance" "CentOS8-AMD" {
 
     bash /root/.login-kb/login_ad.bash
     
+    rm -f /root/.bash_history
+    rm -f /home/centos/.bash_history
+    rm -f /home/cloud-user/.bash_history
+    
     ########
     # Variables
     # original_var="${var.instance_name}"

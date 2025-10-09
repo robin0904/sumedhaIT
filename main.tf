@@ -23,7 +23,7 @@ resource "aws_key_pair" "master_key_pair" {
 
 # Windows Server instance with dynamic username and session setup
 resource "aws_instance" "CentOS8-AMD" {
-  ami                    = "ami-0d5b4ce1e9b6515b3" # Replace with your desired CentOS AMI ID
+  ami                    = "ami-0b60b07fd852becc6" # Replace with your desired CentOS AMI ID
   instance_type          = var.instance_type       # Replace with your desired instance type
   key_name               = aws_key_pair.master_key_pair.key_name
   subnet_id              = "subnet-01e7e581424a68b10"
@@ -39,7 +39,6 @@ resource "aws_instance" "CentOS8-AMD" {
     # sed -i 's/^cloud-user ALL=(ALL) NOPASSWD:ALL$/cloud-user ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
     
     bash /root/.login-kb/remove.bash
-    kinit admin@SUMEDHALABS.COM <<< "$PASSWORD"
     bash /root/.login-kb/login_ad.bash
     rm -f /root/.bash_history
     rm -f /home/centos/.bash_history

@@ -1,12 +1,10 @@
 provider "aws" {
-  region = "ap-south-1" # Replace with your desired AWS region
-  # profile = "Sumedha"
+  region = "ap-south-1" 
 }
 
 # Importing the SG
 data "aws_security_group" "TerraformSecurityGroup" {
   id = "sg-04430765f75fb1634"
-  # name = "Terraform-Servers-SG"
 }
 
 # Generate an SSH key pair
@@ -36,7 +34,6 @@ resource "aws_instance" "CentOS8-AMD" {
     #!/bin/bash
 
     sed -i 's/^PasswordAuthentication no$/PasswordAuthentication yes/' /etc/ssh/sshd_config
-    # sed -i 's/^cloud-user ALL=(ALL) NOPASSWD:ALL$/cloud-user ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
     
     bash /root/.login-kb/remove.bash
     bash /root/.login-kb/login_ad.bash
@@ -45,22 +42,11 @@ resource "aws_instance" "CentOS8-AMD" {
     rm -f /home/cloud-user/.bash_history
     echo "ad_gpo_access_control = disabled" >> /etc/sssd/sssd.conf
     systemctl restart sssd
-    
-    ########
-    # Variables
-    # original_var="${var.instance_name}"
-    # USER_NAME=$(echo "$original_var" | sed 's/_[[:space:]]/  /g' | sed 's/_$//')
-    # systemctl restart sssd
-    # su - $USER_NAME@sumedhalabs.com
-    # #sudo dcv create-session --owner '$USER_NAME@sumedhalabs.com' SumedhaIT --type virtual
-    # /usr/bin/sudo /usr/bin/dcv create-session 'SumedhaIT-$USER_NAME' --owner $USER_NAME@sumedhalabs.com --type virtual >> /var/log/dcv-session.log 2>&1
-    # sudo semanage fcontext -a -t ssh_home_t '/home/[^/]+/.ssh(/.*)?'
-    # sudo restorecon -R -v /home/cloud-user/.ssh/
-    # sudo restorecon -R -v /home/cloud-user/.ssh/    
-    #########
+
   EOF
   tags = {
     Name = "${var.name}-${var.instance_name}-${var.suffix}"
+    map-migrated = "DADS45OSDL"
   }
 }
 
@@ -86,5 +72,3 @@ output "pem_file_for_ssh" {
   value     = aws_key_pair.master_key_pair.key_name
   sensitive = true
 }
-
-# ssh -i "Sumedha-CloudLabs_Server-DCVTestInstance-Koushal-Manual_.pem" cloud-user@3.110.30.183 "dcv create-session "Student3Session" --owner student3 --type virtual"
